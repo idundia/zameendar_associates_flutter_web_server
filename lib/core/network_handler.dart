@@ -3,18 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 class NetworkHandler {
-  //final HttpClient _httpClient = HttpClient();
-  //
-  //
-  /* NetworkHandler(){
-    
-  } */
-
+  /*
   //Response response;
   Future<dynamic> get(String url) async {
     try {
@@ -25,21 +18,33 @@ class NetworkHandler {
         //print(responseBody['data']);
         if (responseBody['message'] == "List is Empty") {
           return [];
-        } /* else if (responseBody['data'] is List<dynamic>) {
-        return (responseBody as List<dynamic>);
-      } */
-        /* else if (responseBody['data'] is List) {
-        return (responseBody as List);
-      } else if (responseBody['data'] is String) {
+        }
         return responseBody;
-      } */
-        return responseBody;
-        //return jsonDecode(response.body);
       }
-
-      //HttpClient get sendRequest =>_httpClient;
     } catch (e) {
       print(e);
+    }
+  }*/
+  Future<dynamic> get(String url) async {
+    try {
+      final uri = formater(url);
+      print('GET $uri');
+      final response = await http.get(uri);
+      print('STATUS: ${response.statusCode}');
+      print('RAW BODY: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        if (responseBody is Map && responseBody['message'] == "List is Empty") {
+          return [];
+        }
+        return responseBody;
+      } else {
+        throw Exception('GET $uri failed with status ${response.statusCode}');
+      }
+    } catch (e) {
+      print('NetworkHandler.get error: $e');
+      rethrow; // rethrow so Flutter shows the actual error
     }
   }
 
