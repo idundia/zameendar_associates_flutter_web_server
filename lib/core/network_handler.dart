@@ -165,7 +165,8 @@ class NetworkHandler {
   Uri formater(String url) {
     //API_URL
     //String baseUrl = dotenv.env['API_URL'].toString();
-    String baseUrl = 'http://72.62.21.165:4000/api';
+    //String baseUrl = 'http://72.62.21.165:4000/api';
+    const baseUrl = 'https://zameendarassociates.com/api';
     return Uri.parse(baseUrl + url);
   }
 }

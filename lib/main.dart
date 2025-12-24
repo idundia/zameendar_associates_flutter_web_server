@@ -7,7 +7,6 @@ import 'package:zameendar_web_app/data/controllers/plot_info_controller.dart';
 import 'package:zameendar_web_app/data/controllers/plot_transfer_controller.dart';
 import 'package:zameendar_web_app/data/controllers/project_info_controller.dart';
 import 'package:zameendar_web_app/data/controllers/vendor_controller.dart';
-import 'package:zameendar_web_app/presentation/screens/main_screen.dart'; // Import the new screen
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

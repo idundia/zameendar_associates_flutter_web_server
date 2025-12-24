@@ -26,7 +26,7 @@ class PlotInfoCustomerDetailsScreen extends StatelessWidget {
     try {
       // Base URL should be defined in your dotenv file
       //final imageUrlFull = dotenv.env['IMAGE_URL']! + imageUrl;
-      final imageUrlFull = "http://72.62.21.165:4000$imageUrl";
+      final imageUrlFull = "https://zameendarassociates.com$imageUrl";
       final response = await http.get(Uri.parse(imageUrlFull));
 
       if (response.statusCode == 200) {

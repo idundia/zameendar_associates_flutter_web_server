@@ -11,7 +11,7 @@ import 'package:zameendar_web_app/data/models/projects/project_info_model.dart';
 
 class ProjectInfoRepository {
   static const String _baseUrl =
-      'http://72.62.21.165:4000/api'; // Example base URL
+      'https://zameendarassociates.com/api'; // Example base URL
   final _networkHandler = NetworkHandler();
   Future<List<CompanyModel>> getAllCompanies() async {
     try {
@@ -80,7 +80,7 @@ class ProjectInfoRepository {
       //await dotenv.load(fileName: ".env");
 
       //String baseUrl = dotenv.env['API_URL'].toString();
-      String baseUrl = 'http://72.62.21.165:4000/api';
+      String baseUrl = 'https://zameendarassociates.com/api';
       Uri uri = Uri.parse(baseUrl + url);
       var request = http.MultipartRequest(method, uri);
 
