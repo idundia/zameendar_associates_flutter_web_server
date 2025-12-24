@@ -4,19 +4,22 @@ class CompanyModel {
   int? numberofUsers;
   String? address;
   String? city;
-  String? state;
+  String? province;
+  String? domainName;
   String? createdOn;
   String? updatedOn;
 
-  CompanyModel(
-      {this.sId,
-      this.companyName,
-      this.numberofUsers,
-      this.address,
-      this.city,
-      this.state,
-      this.createdOn,
-      this.updatedOn});
+  CompanyModel({
+    this.sId,
+    this.companyName,
+    this.numberofUsers,
+    this.address,
+    this.city,
+    this.province,
+    this.domainName,
+    this.createdOn,
+    this.updatedOn,
+  });
 
   CompanyModel.fromJson(Map<String, dynamic> json) {
     if (json['_id'] != null) {
@@ -26,7 +29,8 @@ class CompanyModel {
     numberofUsers = json['numberofUsers'];
     address = json['address'];
     city = json['city'];
-    state = json['state'];
+    province = json['province'];
+    domainName = json['domainName'];
     createdOn = json['createdOn'];
     updatedOn = json['updatedOn'];
   }
@@ -40,7 +44,8 @@ class CompanyModel {
     data['numberofUsers'] = numberofUsers;
     data['address'] = address;
     data['city'] = city;
-    data['state'] = state;
+    data['province'] = province;
+    data['domainName'] = domainName;
     data['createdOn'] = createdOn;
     data['updatedOn'] = updatedOn;
     return data;
