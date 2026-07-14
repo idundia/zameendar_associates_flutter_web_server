@@ -14,9 +14,10 @@ class PlotInfoController extends GetxController {
   void onInit() {
     super.onInit();
     //fetchAllPlots();
-    if (plotInfos.value.isEmpty) {
+
+    /*if (plotInfos.value.isEmpty) {
       fetchAllPlots();
-    }
+    }*/
   }
 
   void fetchAllPlots() async {

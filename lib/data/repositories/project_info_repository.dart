@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:zameendar_web_app/core/network_handler.dart';
@@ -10,12 +10,11 @@ import 'package:zameendar_web_app/data/models/company_model.dart';
 import 'package:zameendar_web_app/data/models/projects/project_info_model.dart';
 
 class ProjectInfoRepository {
-  static const String _baseUrl =
-      'https://zameendarassociates.com/api'; // Example base URL
+  String baseUrl = dotenv.env['API_URL'].toString();
   final _networkHandler = NetworkHandler();
   Future<List<CompanyModel>> getAllCompanies() async {
     try {
-      final response = await _networkHandler.get('/companies');
+      final response = await _networkHandler.get('/api/companies');
       if (response.statusCode == 200) {
         List<dynamic> body = json.decode(response.body);
         return body.map((dynamic item) => CompanyModel.fromJson(item)).toList();
@@ -34,7 +33,7 @@ class ProjectInfoRepository {
 
   Future<List<ProjectInfoModel>> getAllProjects() async {
     try {
-      final response = await _networkHandler.get('/projects/project_infos');
+      final response = await _networkHandler.get('/api/projects/project_infos');
       if (response['data'].length > 0) {
         return (response['data'] as List<dynamic>)
             .map((json) => ProjectInfoModel.fromJson(json))
@@ -54,7 +53,7 @@ class ProjectInfoRepository {
   ) async {
     try {
       final response = await _networkHandler.get(
-        '/projects/project_infos/vendors/$vendorSubsidaryId',
+        '/api/projects/project_infos/vendors/$vendorSubsidaryId',
       );
       if (response['data'].length > 0) {
         return (response['data'] as List<dynamic>)
@@ -77,10 +76,7 @@ class ProjectInfoRepository {
     String method = 'POST',
   }) async {
     try {
-      //await dotenv.load(fileName: ".env");
-
-      //String baseUrl = dotenv.env['API_URL'].toString();
-      String baseUrl = 'https://zameendarassociates.com/api';
+      String baseUrl = dotenv.env['API_URL'].toString();
       Uri uri = Uri.parse(baseUrl + url);
       var request = http.MultipartRequest(method, uri);
 
@@ -114,14 +110,13 @@ class ProjectInfoRepository {
     }
   }
 
-  // The return type should be Future<ProjectInfoModel> since it's an async function
   Future<ProjectInfoModel> createProject(
     ProjectInfoModel project, {
     File? imageFile,
   }) async {
     try {
       var responseData = await postMultipart(
-        "/projects/createProject",
+        "/api/projects/createProject",
         project.toJson(),
         imageFile: imageFile,
       );
@@ -144,9 +139,7 @@ class ProjectInfoRepository {
   ) async {
     try {
       final response = await http.put(
-        Uri.parse(
-          '$_baseUrl/projects/$id',
-        ), // Assuming /api/projects/:id endpoint
+        Uri.parse('$baseUrl/api/projects/$id'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(project.toJson()),
       );
@@ -163,10 +156,9 @@ class ProjectInfoRepository {
     }
   }
 
-  // You might also need methods to fetch a single project by ID or all projects
   Future<ProjectInfoModel?> getProjectById(String id) async {
     try {
-      final response = await http.get(Uri.parse('$_baseUrl/projects/$id'));
+      final response = await http.get(Uri.parse('$baseUrl/api/projects/$id'));
       if (response.statusCode == 200) {
         return ProjectInfoModel.fromJson(json.decode(response.body));
       } else {

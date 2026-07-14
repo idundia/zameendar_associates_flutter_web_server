@@ -82,27 +82,24 @@ class PlotTransferController extends GetxController {
     ).format(now);
 
     // 2. Listen for Company Data Loading (Crucial for dependent fetches)
+    /*
     _companyDataLoadingDisposer = ever(companyController.isCompanyDataLoading, (
       bool isLoadingStatus,
     ) {
       if (!isLoadingStatus &&
           companyController.currenctCompanyInfo.value.sId != null) {
-        print(
-          "DailyExpenseController: Company data loaded. Loading initial expenses and assets.",
-        );
+        print("PlotTransferController: loading plot transfer data");
         getPlotTransfers(); // Consolidate initial loading
       } else if (!isLoadingStatus &&
           companyController.currenctCompanyInfo.value.sId == null) {
-        print(
-          "DailyExpenseController: Company data load finished, but sId is null. Cannot load expenses/assets.",
-        );
+        print("PlotTransferController:  loading plot transfer data");
         Get.snackbar(
           'Error',
-          'Company data not available. Cannot load expense/asset data.',
+          'PlotTransferController: loading plot transfer data',
           snackPosition: SnackPosition.BOTTOM,
         );
       }
-    });
+    });*/
 
     // 3. Listen to search text field changes for immediate filtering
     plotNameSearchController.addListener(searchPlotTransfers);
@@ -129,10 +126,6 @@ class PlotTransferController extends GetxController {
 
   /// Filters the _expenseVouchers list based on search text and date range.
   void searchPlotTransfers() {
-    // No need for isLoading.value = true/false here if this is called frequently
-    // by text listeners. It's too granular and might cause flickers.
-    // Only use isLoading for actual async operations.
-
     final String searchText = plotNameSearchController.text.toLowerCase();
     final DateTime? selectedFromDate = fromDate.value;
     final DateTime? selectedToDate = toDate.value;
@@ -196,15 +189,10 @@ class PlotTransferController extends GetxController {
     );
   }
 
-  /// Filters the _assetVouchers list based on search text and date range.
-
   /// Fetches all expense vouchers for a given company ID.
   Future<void> getPlotTransfers() async {
-    // isLoading.value = true; // Managed by _loadInitialData now
     try {
-      //final timestamp = DateTime.now().millisecondsSinceEpoch;
-      //final url = '/plot_transfer/fetch_plot_transfer?cachebust=$timestamp';
-      final url = '/plot_info/plot_transfer/fetch_plot_transfer';
+      final url = '/api/plot_info/plot_transfer/fetch_plot_transfer';
       var fetchedPlotTransfer = await _plotTransferRepository.getPlotTransfers(
         url,
       );
@@ -341,12 +329,8 @@ class Formatter {
 
   static DateTime? parseDate(String dateString) {
     try {
-      // Handles 'dd-MM-yyyy' (from your previous code)
-      final parts = dateString.split(
-        '-',
-      ); // Changed from '/' to '-' based on your DateFormat usage
+      final parts = dateString.split('-');
       if (parts.length == 3) {
-        // Assuming format is dd-MM-yyyy or dd-MMM-yyyy (will attempt parse)
         return DateTime(
           int.parse(parts[2]),
           int.parse(parts[1]),

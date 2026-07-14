@@ -14,8 +14,6 @@ class ProjectInfoController extends GetxController {
 
   RxList<ProjectInfoModel> projects = <ProjectInfoModel>[].obs;
   Rxn<ProjectInfoModel> selectedProject = Rxn<ProjectInfoModel>();
-  // Text Editing Controllers
-  //final TextEditingController vendorNameTextControler = TextEditingController();
 
   final TextEditingController projectNameTextControler =
       TextEditingController();
@@ -27,9 +25,6 @@ class ProjectInfoController extends GetxController {
   final TextEditingController closingDateTextController =
       TextEditingController();
 
-  // Reactive Variables
-  //final Rx<CompanyModel?> selectedCompany = Rxn<CompanyModel>();
-  //final RxList<CompanyModel> companies = <CompanyModel>[].obs;
   final Rx<DateTime?> startDate = Rxn<DateTime>();
   final Rx<DateTime?> closingDate = Rxn<DateTime>();
   final RxBool isLoading = false.obs;
@@ -46,20 +41,6 @@ class ProjectInfoController extends GetxController {
     //fetchCompanies();
     fetchProjects();
   }
-  /*
-  Future<void> fetchCompanies() async {
-    isLoading.value = true;
-    try {
-      final fetchedCompanies = await _projectRepository.getAllCompanies();
-      companies.assignAll(fetchedCompanies);
-      if (companies.isNotEmpty) {
-        // Optionally pre-select the first company or a default one
-        // selectedCompany.value = companies.first;
-      }
-    } finally {
-      isLoading.value = false;
-    }
-  }*/
 
   Future<void> fetchProjects() async {
     isLoading.value = true;

@@ -69,12 +69,7 @@ class VendorInfoRepository {
     late List<SupplierLedgerModel> suppliers = <SupplierLedgerModel>[];
     try {
       var response = await _networkHandler.get(url);
-      /* var decodedData = response['data'];
-      _customers = (decodedData as List<dynamic>)
-          .map((customer) =>
-              CustomerModel.fromJson(customer)
-          .toList();
-      return _customers; */
+
       if (response['data'].length > 0) {
         var listData =
             (response['data'] as List)
@@ -97,12 +92,7 @@ class VendorInfoRepository {
     late List<SupplierLedgerModel> suppliers = <SupplierLedgerModel>[];
     try {
       var response = await _networkHandler.get(url);
-      /* var decodedData = response['data'];
-      _customers = (decodedData as List<dynamic>)
-          .map((customer) =>
-              CustomerModel.fromJson(customer)
-          .toList();
-      return _customers; */
+
       if (response['data'].length > 0) {
         var listData =
             (response['data'] as List)
@@ -122,23 +112,16 @@ class VendorInfoRepository {
   }
 
   Future<double> getAllSupplier_Balance(String url) async {
-    //late RxList<VoucherDetail> _customerVouchers = <VoucherDetail>[].obs;
     double? balance = 0;
     try {
       var response = await _networkHandler.get(url);
-      /* var decodedData = response['data'];
-      _customers = (decodedData as List<dynamic>)
-          .map((customer) =>
-              CustomerModel.fromJson(customer)
-          .toList();
-      return _customers; */
+
       if (response['data'] == null) {
         return balance = 0;
       }
       if (response['data'] > 0) {
         balance = double.tryParse(response['data'].toString());
       }
-      //return CustomerModel.fromJson(response['data']);
       return balance!;
     } catch (e) {
       rethrow;
@@ -149,17 +132,10 @@ class VendorInfoRepository {
     VendorInfo supplier = VendorInfo();
     try {
       var response = await _networkHandler.get(url);
-      /* var decodedData = response['data'];
-      _customers = (decodedData as List<dynamic>)
-          .map((customer) =>
-              CustomerModel.fromJson(customer)
-          .toList();
-      return _customers; */
       if (response['data'].length > 0) {
         supplier = VendorInfo.fromJson(response['data']);
       }
       return supplier;
-      //return CustomerModel.fromJson(response['data']);
     } catch (e) {
       rethrow;
     }
@@ -167,22 +143,12 @@ class VendorInfoRepository {
 
   Future<bool> saveVoucher(AccountVoucher voucherMain) async {
     try {
-      //AccountVoucher voucher = AccountVoucher();
-      /* Response response = await _api.sendRequest
-          .post("/order", data: jsonEncode(orderModel.toJson())); */
       var response = await _networkHandler.post(
         "/purchase/savevoucher",
         voucherMain.toJson(),
       );
-      /* ApiResponse apiResponse = ApiResponse.fromResponse(response);
-
-      if (!apiResponse.success) {
-        throw apiResponse.message.toString();
-      } */
-      //Convert raw data to model
-      //return OrderModel.fromJson(apiResponse.data);
       if (response['success'] == true) {
-        return true; //AccountVoucher.fromJson(response['data']);
+        return true;
       }
       return false;
     } catch (ex) {

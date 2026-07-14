@@ -46,7 +46,9 @@ class VendorController extends GetxController {
   // This is the new method to fetch all vendors from the repository.
   Future<void> getAllVendors() async {
     try {
-      final vendors = await supplierRepository.getAllVendors('/vendor_info');
+      final vendors = await supplierRepository.getAllVendors(
+        '/api/vendor_info',
+      );
       _vendors.assignAll(vendors);
     } catch (e) {
       // You should handle errors here, e.g., show a snackbar or log the error.
@@ -58,7 +60,7 @@ class VendorController extends GetxController {
     VendorInfo supplier,
   ) async {
     _supplierLedger = await supplierRepository.getSupplierLedger(
-      '/supplier/supplierledger/${supplier.sId}',
+      '/api/supplier/supplierledger/${supplier.sId}',
     );
     return _supplierLedger;
   }
@@ -67,14 +69,14 @@ class VendorController extends GetxController {
     VendorInfo supplier,
   ) async {
     _supplierLedger = await supplierRepository.getSupplierLedger_Report(
-      '/supplier/supplierledger_report/${supplier.sId}',
+      '/api/supplier/supplierledger_report/${supplier.sId}',
     );
     return _supplierLedger;
   }
 
   Future<void> getSupplier_PreviousBalance(String subsidaryId) async {
     previousBalance.value = await supplierRepository.getAllSupplier_Balance(
-      '/vendor_info/balance/$subsidaryId',
+      '/api/vendor_info/balance/$subsidaryId',
     );
     //return previouseBalance.value ?? 0.0;
   }

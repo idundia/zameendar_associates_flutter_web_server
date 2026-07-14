@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:zameendar_web_app/core/routes.dart';
@@ -8,15 +9,25 @@ import 'package:zameendar_web_app/data/controllers/plot_transfer_controller.dart
 import 'package:zameendar_web_app/data/controllers/project_info_controller.dart';
 import 'package:zameendar_web_app/data/controllers/vendor_controller.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
+
+  try {
+    // 3. Load the environment file before running the app
+    await dotenv.load(fileName: ".env");
+    print("Environment variables loaded successfully.");
+  } catch (e) {
+    print("Failed to load .env file: $e");
+  }
+
   // Register the controller before running the app
   Get.put(CompanyController());
   Get.put(VendorController());
   Get.put(ProjectInfoController());
   Get.put(PlotInfoController());
   Get.put(PlotTransferController());
+
   runApp(const ZameendarWebApp());
 }
 
@@ -44,14 +55,7 @@ class ZameendarWebApp extends StatelessWidget {
       // Set the MainScreen as the home page
       onGenerateRoute: Routes.onGenerateRoute,
 
-      //home: MainScreen(),
-
-      // Optional: Define named routes if you want to use the Navigator.pushNamed
-      // calls in the AppBar (you can map these to the same MainScreen and
-      // use the scroll controller for navigation)
-      routes: {
-        // You would typically define other screens here
-      },
+      routes: {},
 
       // Disable the debug banner in the corner
       debugShowCheckedModeBanner: false,

@@ -1,35 +1,24 @@
-//import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 class NetworkHandler {
-  /*
-  //Response response;
   Future<dynamic> get(String url) async {
     try {
-      var response = await http.get(formater(url));
-      //log.i(response.body);
-      if (response.statusCode == 200) {
-        var responseBody = jsonDecode(response.body);
-        //print(responseBody['data']);
-        if (responseBody['message'] == "List is Empty") {
-          return [];
-        }
-        return responseBody;
+      //final uri = formater(url);
+      //print('GET $uri');
+      String baseUrl = dotenv.env['API_URL'] ?? '';
+
+      if (!baseUrl.endsWith('/') && !url.startsWith('/')) {
+        baseUrl += '/';
       }
-    } catch (e) {
-      print(e);
-    }
-  }*/
-  Future<dynamic> get(String url) async {
-    try {
-      final uri = formater(url);
-      print('GET $uri');
-      final response = await http.get(uri);
+
+      var response = await http.get(Uri.parse("$baseUrl$url"));
+      //final response = await http.get(uri);
       print('STATUS: ${response.statusCode}');
       print('RAW BODY: ${response.body}');
 
@@ -40,18 +29,20 @@ class NetworkHandler {
         }
         return responseBody;
       } else {
-        throw Exception('GET $uri failed with status ${response.statusCode}');
+        throw Exception('GET $url failed with status ${response.statusCode}');
       }
     } catch (e) {
       print('NetworkHandler.get error: $e');
-      rethrow; // rethrow so Flutter shows the actual error
+      rethrow;
     }
   }
 
   Future<dynamic> postMultipart(
     String url,
     Map<String, dynamic> body, {
-    File? imageFile,
+    File? profilePictureFile,
+    File? profileSignatureFile,
+    File? profileBiometricFile,
   }) async {
     try {
       Uri uri = Uri.parse(url);
@@ -63,11 +54,29 @@ class NetworkHandler {
       });
 
       // Add the image file if it exists
-      if (imageFile != null) {
+      if (profilePictureFile != null) {
         request.files.add(
           await http.MultipartFile.fromPath(
-            'profilePicture', // This field name must match your backend's expectation
-            imageFile.path,
+            'profilePicture',
+            profilePictureFile.path,
+          ),
+        );
+      }
+
+      if (profileSignatureFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'profileSignature',
+            profileSignatureFile.path,
+          ),
+        );
+      }
+
+      if (profileBiometricFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'profileBiometric',
+            profileBiometricFile.path,
           ),
         );
       }
@@ -168,12 +177,26 @@ class NetworkHandler {
   }
 
   Uri formater(String url) {
-    //API_URL
-    //String baseUrl = dotenv.env['API_URL'].toString();
-    //String baseUrl = 'http://72.62.21.165:4000/api';
-    const baseUrl = 'https://zameendarassociates.com/api/v1';
+    String baseUrl = dotenv.env['API_URL'] ?? '';
+
+    // Ensure baseUrl ends with a slash if the url doesn't start with one
+    if (!baseUrl.endsWith('/') && !url.startsWith('/')) {
+      baseUrl = '$baseUrl/';
+    }
+
+    // If baseUrl already ends with a slash AND url starts with one, remove the duplicate
+    if (baseUrl.endsWith('/') && url.startsWith('/')) {
+      url = url.substring(1);
+    }
+
     return Uri.parse(baseUrl + url);
   }
+
+  /*
+  Uri formater(String url) {
+    String baseUrl = dotenv.env['API_URL'] ?? '';
+    return Uri.parse(baseUrl + url);
+  }*/
 }
 
 class ApiResponse {
@@ -185,12 +208,10 @@ class ApiResponse {
 
   factory ApiResponse.fromResponse(Response response) {
     final data = json.decode(response.body) as Map<String, dynamic>;
-    //final data = response.data as dynamic;
     return ApiResponse(
       success: data["success"] as bool,
       data: data["data"] as dynamic,
       message: data["message"] ?? "Unexpected error.",
     );
-    //message: data["message"]);
   }
 }

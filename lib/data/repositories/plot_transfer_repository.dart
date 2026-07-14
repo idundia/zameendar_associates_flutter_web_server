@@ -12,19 +12,14 @@ class PlotTransferRepository {
     try {
       var response = await _networkHandler.get(url);
 
-      //if (response != null && response['data'].length > 0) {
       if (response != null) {
         var listData =
             (response['data'] as List)
                 .map((account) => PlotTransferModel.fromJson(account))
                 .toList();
-        /*
-        for (var customer in listData) {
-          expenseVoucherDetails.value.add(customer);
-        }
-        */
+
         plotTransfers.assignAll(listData);
-        //print(listData);
+
         return plotTransfers;
       } else {
         return RxList<PlotTransferModel>([]);
@@ -39,19 +34,13 @@ class PlotTransferRepository {
   ) async {
     try {
       PlotTransferModel voucher = PlotTransferModel();
-      /* Response response = await _api.sendRequest
-          .post("/order", data: jsonEncode(orderModel.toJson())); */
+
       var response = await _networkHandler.post(
-        "/plot_info/plot_transfer/save_plot_transfer",
+        "/api/plot_info/plot_transfer/save_plot_transfer",
         plotTransferModel.toJson(),
       );
-      /* ApiResponse apiResponse = ApiResponse.fromResponse(response);
 
-      if (!apiResponse.success) {
-        throw apiResponse.message.toString();
-      } */
       //Convert raw data to model
-      //return OrderModel.fromJson(apiResponse.data);
       if (response['data'] != null) {
         return PlotTransferModel.fromJson(response['data']);
       }
