@@ -14,7 +14,7 @@ class ProjectInfoRepository {
   final _networkHandler = NetworkHandler();
   Future<List<CompanyModel>> getAllCompanies() async {
     try {
-      final response = await _networkHandler.get('/api/companies');
+      final response = await _networkHandler.get('/companies');
       if (response.statusCode == 200) {
         List<dynamic> body = json.decode(response.body);
         return body.map((dynamic item) => CompanyModel.fromJson(item)).toList();
@@ -33,7 +33,7 @@ class ProjectInfoRepository {
 
   Future<List<ProjectInfoModel>> getAllProjects() async {
     try {
-      final response = await _networkHandler.get('/api/projects/project_infos');
+      final response = await _networkHandler.get('/projects/project_infos');
       if (response['data'].length > 0) {
         return (response['data'] as List<dynamic>)
             .map((json) => ProjectInfoModel.fromJson(json))
@@ -53,7 +53,7 @@ class ProjectInfoRepository {
   ) async {
     try {
       final response = await _networkHandler.get(
-        '/api/projects/project_infos/vendors/$vendorSubsidaryId',
+        '/projects/project_infos/vendors/$vendorSubsidaryId',
       );
       if (response['data'].length > 0) {
         return (response['data'] as List<dynamic>)
@@ -116,7 +116,7 @@ class ProjectInfoRepository {
   }) async {
     try {
       var responseData = await postMultipart(
-        "/api/projects/createProject",
+        "/projects/createProject",
         project.toJson(),
         imageFile: imageFile,
       );
@@ -139,7 +139,7 @@ class ProjectInfoRepository {
   ) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/api/projects/$id'),
+        Uri.parse('$baseUrl/projects/$id'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(project.toJson()),
       );
@@ -158,7 +158,7 @@ class ProjectInfoRepository {
 
   Future<ProjectInfoModel?> getProjectById(String id) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/api/projects/$id'));
+      final response = await http.get(Uri.parse('$baseUrl/projects/$id'));
       if (response.statusCode == 200) {
         return ProjectInfoModel.fromJson(json.decode(response.body));
       } else {

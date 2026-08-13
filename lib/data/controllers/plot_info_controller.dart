@@ -13,11 +13,6 @@ class PlotInfoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    //fetchAllPlots();
-
-    /*if (plotInfos.value.isEmpty) {
-      fetchAllPlots();
-    }*/
   }
 
   void fetchAllPlots() async {
@@ -51,11 +46,11 @@ class PlotInfoController extends GetxController {
 
   Future<void> fetchPlotInfoById(String plotId) async {
     try {
-      // 💡 CRITICAL: Call the repository to fetch the single plot object
+      //  CRITICAL: Call the repository to fetch the single plot object
       final plot = await _plotRepository.getPlotById(plotId);
 
       if (plot != null) {
-        // 💡 CRITICAL: Update the reactive variable with the single PlotInfoModel
+        //  CRITICAL: Update the reactive variable with the single PlotInfoModel
         currentPlotModel.value = plot;
         debugPrint('PlotInfo fetched successfully for ID: $plotId');
       } else {

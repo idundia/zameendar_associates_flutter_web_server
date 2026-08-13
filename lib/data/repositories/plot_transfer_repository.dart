@@ -36,7 +36,7 @@ class PlotTransferRepository {
       PlotTransferModel voucher = PlotTransferModel();
 
       var response = await _networkHandler.post(
-        "/api/plot_info/plot_transfer/save_plot_transfer",
+        "/plot_info/plot_transfer/save_plot_transfer",
         plotTransferModel.toJson(),
       );
 

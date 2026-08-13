@@ -81,26 +81,6 @@ class PlotTransferController extends GetxController {
       'dd-MM-yyyy hh:mm a',
     ).format(now);
 
-    // 2. Listen for Company Data Loading (Crucial for dependent fetches)
-    /*
-    _companyDataLoadingDisposer = ever(companyController.isCompanyDataLoading, (
-      bool isLoadingStatus,
-    ) {
-      if (!isLoadingStatus &&
-          companyController.currenctCompanyInfo.value.sId != null) {
-        print("PlotTransferController: loading plot transfer data");
-        getPlotTransfers(); // Consolidate initial loading
-      } else if (!isLoadingStatus &&
-          companyController.currenctCompanyInfo.value.sId == null) {
-        print("PlotTransferController:  loading plot transfer data");
-        Get.snackbar(
-          'Error',
-          'PlotTransferController: loading plot transfer data',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      }
-    });*/
-
     // 3. Listen to search text field changes for immediate filtering
     plotNameSearchController.addListener(searchPlotTransfers);
   }
@@ -142,8 +122,7 @@ class PlotTransferController extends GetxController {
           // Filter by date range
           bool isInDateRange = true;
           if (transferDate == null) {
-            isInDateRange =
-                false; // A voucher without a date cannot be in a date range
+            isInDateRange = false;
           } else {
             // Normalize voucherDate to start of day for comparison
             final DateTime normalizedVoucherDate = DateTime(
@@ -192,7 +171,7 @@ class PlotTransferController extends GetxController {
   /// Fetches all expense vouchers for a given company ID.
   Future<void> getPlotTransfers() async {
     try {
-      final url = '/api/plot_info/plot_transfer/fetch_plot_transfer';
+      final url = '/plot_info/plot_transfer/fetch_plot_transfer';
       var fetchedPlotTransfer = await _plotTransferRepository.getPlotTransfers(
         url,
       );
@@ -205,7 +184,6 @@ class PlotTransferController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     }
-    // finally { isLoading.value = false; } // Managed by _loadInitialData now
   }
 
   /// Opens a date picker to select the "From" date and triggers a search.
@@ -304,7 +282,7 @@ class PlotTransferController extends GetxController {
   @override
   void onClose() {
     print("PlotTransferController: onClose called. Disposing resources.");
-    _companyDataLoadingDisposer(); // Dispose the ever listener
+    //_companyDataLoadingDisposer(); // Dispose the ever listener
     plotNameSearchController.removeListener(searchPlotTransfers);
 
     // Dispose all TextEditingControllers

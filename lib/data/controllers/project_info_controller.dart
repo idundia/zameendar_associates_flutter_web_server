@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:zameendar_web_app/data/controllers/company_controller.dart';
-import 'package:zameendar_web_app/data/controllers/vendor_controller.dart';
 import 'package:zameendar_web_app/data/models/projects/project_info_model.dart';
 import 'package:zameendar_web_app/data/repositories/project_info_repository.dart';
 
 class ProjectInfoController extends GetxController {
   final CompanyController companyController = Get.find();
-  final VendorController vendorController = Get.find();
+  //final VendorController vendorController = Get.find();
   final ProjectInfoRepository _projectRepository = ProjectInfoRepository();
 
   RxList<ProjectInfoModel> projects = <ProjectInfoModel>[].obs;
@@ -114,30 +113,14 @@ class ProjectInfoController extends GetxController {
       closingDate.value = null;
       closingDateTextController.clear();
     }
-    /*
-    // Find and set the selected company
-    if (project.companyId != null) {
-      selectedCompany.value =
-          companies.firstWhereOrNull((comp) => comp.sId == project.companyId);
-    } else {
-      selectedCompany.value = null;
-    }*/
   }
 
   Future<void> saveProject() async {
-    /*
-    if (selectedCompany.value == null) {
-      Get.snackbar('Error', 'Please select a Company.');
-      return;
-    }*/
     if (projectNameTextControler.text.isEmpty ||
         addressController.text.isEmpty ||
         cityController.text.isEmpty ||
         provinceController.text.isEmpty ||
-        startDate.value ==
-            null //||
-    //closingDate.value == null
-    ) {
+        startDate.value == null) {
       Get.snackbar('Error', 'Please fill all required fields.');
       return;
     }

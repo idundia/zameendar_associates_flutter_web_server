@@ -9,16 +9,11 @@ import 'package:http/http.dart';
 class NetworkHandler {
   Future<dynamic> get(String url) async {
     try {
-      //final uri = formater(url);
-      //print('GET $uri');
-      String baseUrl = dotenv.env['API_URL'] ?? '';
+      // Use formater() to standardize URL construction
+      Uri uri = formater(url);
+      print('GET URI: $uri');
 
-      if (!baseUrl.endsWith('/') && !url.startsWith('/')) {
-        baseUrl += '/';
-      }
-
-      var response = await http.get(Uri.parse("$baseUrl$url"));
-      //final response = await http.get(uri);
+      var response = await http.get(uri);
       print('STATUS: ${response.statusCode}');
       print('RAW BODY: ${response.body}');
 
@@ -179,6 +174,19 @@ class NetworkHandler {
   Uri formater(String url) {
     String baseUrl = dotenv.env['API_URL'] ?? '';
 
+    if (!baseUrl.endsWith('/') && !url.startsWith('/')) {
+      baseUrl = '$baseUrl/';
+    }
+    if (baseUrl.endsWith('/') && url.startsWith('/')) {
+      url = url.substring(1);
+    }
+
+    return Uri.parse(baseUrl + url);
+  }
+  /*
+  Uri formater(String url) {
+    String baseUrl = dotenv.env['API_URL'] ?? '';
+
     // Ensure baseUrl ends with a slash if the url doesn't start with one
     if (!baseUrl.endsWith('/') && !url.startsWith('/')) {
       baseUrl = '$baseUrl/';
@@ -190,7 +198,7 @@ class NetworkHandler {
     }
 
     return Uri.parse(baseUrl + url);
-  }
+  }*/
 
   /*
   Uri formater(String url) {

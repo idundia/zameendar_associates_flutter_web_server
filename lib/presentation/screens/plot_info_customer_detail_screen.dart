@@ -18,7 +18,52 @@ class PlotInfoCustomerDetailsScreen extends StatelessWidget {
   });
 
   // Helper function to fetch image data as Uint8List
-  // Helper function to fetch image data as Uint8List
+  Future<Uint8List> _fetchImage(String imageUrl) async {
+    if (imageUrl.isEmpty) {
+      return Uint8List(0);
+    }
+
+    try {
+      // 1. Return early if imageUrl is already an absolute HTTP/HTTPS URL
+      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+        final response = await http.get(Uri.parse(imageUrl));
+        return response.statusCode == 200 ? response.bodyBytes : Uint8List(0);
+      }
+
+      // 2. Safely retrieve the base image URL from .env
+      String baseUrl =
+          dotenv.env['IMAGE_URL'] ?? 'https://zameendarassociates.com';
+
+      // 3. Ensure baseUrl ends with a slash if imageUrl doesn't start with one
+      if (!baseUrl.endsWith('/') && !imageUrl.startsWith('/')) {
+        baseUrl = '$baseUrl/';
+      }
+
+      // 4. Prevent a double-slash error if both have a slash
+      if (baseUrl.endsWith('/') && imageUrl.startsWith('/')) {
+        imageUrl = imageUrl.substring(1);
+      }
+
+      final imageUrlFull = baseUrl + imageUrl;
+      debugPrint('Fetching image from: $imageUrlFull');
+
+      final response = await http.get(Uri.parse(imageUrlFull));
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      } else {
+        debugPrint(
+          'Failed to load image from $imageUrlFull. Status: ${response.statusCode}',
+        );
+        return Uint8List(0);
+      }
+    } catch (e) {
+      debugPrint('Error fetching image: $e');
+      return Uint8List(0);
+    }
+  }
+
+  /*
   Future<Uint8List> _fetchImage(String imageUrl) async {
     if (imageUrl.isEmpty) {
       return Uint8List(0);
@@ -57,7 +102,7 @@ class PlotInfoCustomerDetailsScreen extends StatelessWidget {
       return Uint8List(0);
     }
   }
-
+*/
   // Helper function to build detail rows
   Widget _buildDetailRow(String label, String value) {
     return Padding(
@@ -366,121 +411,6 @@ class PlotInfoCustomerDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            /* Card(
-              elevation: 4.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // --- Profile Picture ---
-                    Center(
-                      child: Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 12,
-                              spreadRadius: 2,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: FutureBuilder<Uint8List>(
-                          future: _fetchImage(imageUrl),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Container(
-                                decoration: const BoxDecoration(
-                                  color: const Color(
-                                    0xFFF0F2F5,
-                                  ), // Light modern grey
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Center(
-                                  child: SizedBox(
-                                    width: 30,
-                                    height: 30,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-
-                            if (snapshot.hasError ||
-                                snapshot.data == null ||
-                                snapshot.data!.isEmpty) {
-                              // Elegant placeholder instead of just a raw icon
-                              return Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.blueGrey.shade50,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 3,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  size: 55,
-                                  color: Colors.blueGrey.shade300,
-                                ),
-                              );
-                            }
-
-                            // Display the circular profile image
-                            return Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 3,
-                                ), // Clean outer ring
-                                image: DecorationImage(
-                                  image: MemoryImage(snapshot.data!),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // --- Customer Details ---
-                    _buildDetailRow('Customer Name:', customerName),
-                    _buildDetailRow('CNIC:', customerCnic),
-                    _buildDetailRow('Mobile No:', customerMobileNo),
-
-                    //_buildDetailRow('Transfer Date:', order.transferDate ?? 'N/A'),
-                    const Divider(height: 24, thickness: 1),
-                    //Project Details
-                    _buildDetailRow('Project Name : ', displayProjectName),
-                    _buildDetailRow('City         : ', displayProjectCity),
-                    _buildDetailRow('Address      : ', displayProjectAddress),
-                    const Divider(height: 24, thickness: 1),
-                    // --- Plot Details ---
-                    //_buildDetailRow('Plot ID:', displayPlotId),
-                    _buildDetailRow('Plot No:', displayPlotNo),
-                    _buildDetailRow('Street:', displayStreet),
-                    _buildDetailRow('Block:', displayBlock),
-
-                    // Add more details from the 'order' model here as necessary
-                  ],
-                ),
-              ),
-            ),*/
           ),
         ),
       ),

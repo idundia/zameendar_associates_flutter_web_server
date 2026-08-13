@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zameendar_web_app/data/models/company_model.dart';
 import 'package:zameendar_web_app/data/models/user_model.dart';
@@ -33,37 +34,36 @@ class CompanyController extends GetxController {
     try {
       print("CompanyController: Starting to fetch company infos...");
       RxList<CompanyModel> fetchedCompanies = await _companyRepository
-          .getCompanyInfos("/api/company/company_infos");
+          .getCompanyInfos("/company/company_infos");
       _companyInfos.assignAll(fetchedCompanies);
 
       if (_companyInfos.isNotEmpty) {
-        currenctCompanyInfo.value =
-            _companyInfos.first; // Set the first company as current
+        currenctCompanyInfo.value = _companyInfos.first;
         print(
-          "CompanyController: Company info loaded: ${currenctCompanyInfo.value.companyName}, sId: ${currenctCompanyInfo.value.sId}",
+          "CompanyController: Company info loaded: ${currenctCompanyInfo.value.companyName}",
         );
       } else {
-        currenctCompanyInfo.value =
-            CompanyModel(); // Ensure it's still an empty model if no data
-        print(
-          "CompanyController: No company infos fetched. currenctCompanyInfo.sId is null.",
-        );
+        currenctCompanyInfo.value = CompanyModel();
+        print("CompanyController: No company infos fetched.");
       }
-      hasCompanyDataLoaded.value = true; // Mark as loaded
+      hasCompanyDataLoaded.value = true;
     } catch (e) {
       print("CompanyController: Error loading company infos: $e");
-      // Handle error: show snackbar, set currentCompanyInfo to default
-      Get.snackbar(
-        "Error",
-        "Failed to load company info: $e",
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      hasCompanyDataLoaded.value = false; // Mark as failed to load
+
+      // Safely trigger snackbar only if overlay context is ready
+      if (Get.context != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.snackbar(
+            "Error",
+            "Failed to load company info: $e",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        });
+      }
+      hasCompanyDataLoaded.value = false;
     } finally {
       isCompanyDataLoading.value = false;
-      print(
-        "CompanyController: Company info loading finished. isLoading: ${isCompanyDataLoading.value}, hasLoaded: ${hasCompanyDataLoaded.value}",
-      );
+      print("CompanyController: Company info loading finished.");
     }
   }
 

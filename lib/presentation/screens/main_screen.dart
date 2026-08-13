@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zameendar_web_app/data/controllers/project_info_controller.dart';
 import 'package:zameendar_web_app/data/models/projects/project_info_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({super.key});
@@ -99,26 +100,6 @@ class _MainScreenState extends State<MainScreen> {
       height: heroHeight,
       child: Stack(
         children: [
-          // 1. Background Image (Layer 1)
-          // Ensure you have an image file (e.g., a GIF named 'real_estate_bg.gif')
-
-          /*
-          ColorFiltered(
-            // Use a ColorFilter to darken the image, making the text clearer.
-            colorFilter: ColorFilter.mode(
-              Colors.black.withValues(
-                alpha: 0.55,
-              ), // Dark overlay for text contrast
-              BlendMode.darken,
-            ),
-            child: Image.asset(
-              'assets/images/real_estate_bg.gif', // 💡 Change to your actual file path
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: heroHeight,
-            ),
-          ),
-*/
           // 2. Foreground Content (Layer 2)
           // This is your original text and button content, centered.
           Center(
@@ -273,27 +254,162 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
+  /*
   Widget _buildProjectCard(ProjectInfoModel project) {
-    // Use a default icon if you are not storing the actual icon in the database
-    IconData icon = Icons.apartment;
+    final String? imageUrl = project.logoPicture;
+    final bool hasImage = imageUrl != null && imageUrl.trim().isNotEmpty;
+
+    // Clean path to prevent double slashes (https://domain.com//uploads -> https://domain.com/uploads)
+    final String cleanPath =
+        hasImage && imageUrl.startsWith('/')
+            ? imageUrl.substring(1)
+            : (imageUrl ?? '');
+
+    final String fullImageUrl =
+        hasImage
+            ? (cleanPath.startsWith('http')
+                ? cleanPath
+                : 'https://zameendarassociates.com/$cleanPath')
+            : '';
 
     return SizedBox(
-      width: 280, // Fixed width for project cards
+      width: 280,
       child: Card(
         elevation: 8,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              // Use the icon from the model if available, otherwise use a default
-              Icon(
-                icon, // Or map project.icon string to an IconData
-                size: 60,
-                color: const Color(0xFF1E3A8A),
+              hasImage
+                  ? Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Image.network(
+                      fullImageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(
+                            Icons.apartment,
+                            size: 60,
+                            color: Color(0xFF1E3A8A),
+                          ),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
+                  )
+                  : const Icon(
+                    Icons.apartment,
+                    size: 60,
+                    color: Color(0xFF1E3A8A),
+                  ),
+              const SizedBox(height: 15),
+              Text(
+                project.projectName ?? '',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
+              Text(
+                project.address ?? '',
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  */
+
+  Widget _buildProjectCard(ProjectInfoModel project) {
+    final String? rawImageUrl = project.logoPicture;
+    final bool hasImage = rawImageUrl != null && rawImageUrl.trim().isNotEmpty;
+
+    String fullImageUrl = '';
+
+    if (hasImage) {
+      final String trimmedUrl = rawImageUrl.trim();
+
+      if (trimmedUrl.startsWith('http://') ||
+          trimmedUrl.startsWith('https://')) {
+        fullImageUrl = trimmedUrl;
+      } else {
+        // Retrieve base URL from .env or fallback
+        String baseUrl =
+            dotenv.env['IMAGE_URL'] ?? 'https://zameendarassociates.com';
+
+        // Ensure base URL ends with '/'
+        if (!baseUrl.endsWith('/')) {
+          baseUrl = '$baseUrl/';
+        }
+
+        // Ensure relative path doesn't start with '/'
+        String cleanRelativePath = trimmedUrl;
+        if (cleanRelativePath.startsWith('/')) {
+          cleanRelativePath = cleanRelativePath.substring(1);
+        }
+
+        fullImageUrl = baseUrl + cleanRelativePath;
+      }
+    }
+
+    return SizedBox(
+      width: 280,
+      child: Card(
+        elevation: 8,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              hasImage
+                  ? Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Image.network(
+                      fullImageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(
+                            Icons.apartment,
+                            size: 60,
+                            color: Color(0xFF1E3A8A),
+                          ),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
+                  )
+                  : const Icon(
+                    Icons.apartment,
+                    size: 60,
+                    color: Color(0xFF1E3A8A),
+                  ),
+              const SizedBox(height: 15),
               Text(
                 project.projectName ?? '',
                 textAlign: TextAlign.center,

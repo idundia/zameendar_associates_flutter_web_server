@@ -12,8 +12,15 @@ class Routes {
     String plotId,
   ) async {
     try {
-      final plotTransferController = Get.find<PlotTransferController>();
-      final plotInfoController = Get.find<PlotInfoController>();
+      final plotTransferController =
+          Get.isRegistered<PlotTransferController>()
+              ? Get.find<PlotTransferController>()
+              : Get.put(PlotTransferController());
+
+      final plotInfoController =
+          Get.isRegistered<PlotInfoController>()
+              ? Get.find<PlotInfoController>()
+              : Get.put(PlotInfoController());
 
       debugPrint('--- DEEP LINK DATA FETCH START ---');
       debugPrint('1. Attempting to fetch PlotInfo for ID: $plotId');
@@ -51,7 +58,7 @@ class Routes {
             // Check 2: Extract the ID as a string, handling both Map (populated) and String (unpopulated) forms.
             final transferPlotId =
                 (transfer.plotInfoId is Map)
-                    ? (transfer.plotInfoId as Map)['\_id']?.toString()
+                    ? (transfer.plotInfoId as Map)['_id']?.toString()
                     : transfer.plotInfoId.toString();
 
             // Check 3: Compare the extracted ID to the target plot's sId
